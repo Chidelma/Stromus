@@ -1,0 +1,95 @@
+<script lang="ts">
+    import { dynamo, eventForm } from '../../Scripts/Init';
+    import type { _event } from '../../Scripts/Interface';
+    import type Organ from '../../Scripts/Organ';
+    import { v5 as uuidv5 } from 'uuid';
+    import Event from '../../Scripts/Event';
+    import moment from 'moment';
+    import { createEventDispatcher } from 'svelte';
+
+    export let organ:Organ;
+
+    let loading:boolean = false;
+
+    const dispatch = createEventDispatcher();
+
+    function refreshEvents():void {
+        dispatch('message', {
+            text: 'refresh!'
+        });
+    }
+
+    let new_event:_event = {
+
+        id: '',
+        organ_id: organ.get_id(),
+
+        date: '',
+        title: '',
+        desc: '',
+        location: ''
+    }
+
+    async function addEvent() {
+
+        loading = true;
+
+        new_event.id = uuidv5(moment().format(), organ.get_id());
+
+        let added:boolean = await $dynamo.putItem('EVENTS', new_event);
+
+        if(added) {
+            organ.add_event(new Event(new_event));
+            eventForm.set(false);
+            refreshEvents();
+        }
+
+        loading = false;
+    }
+
+    function getTodayDate():string {
+
+        return moment().format('YYYY-MM-DD');
+    }
+</script>
+
+<h3>New Event</h3>
+
+<hr/>
+
+<input class="form-control event-title" placeholder="Event Title" bind:value="{new_event.title}" required/>
+
+<input type="date" class="form-control event-date" bind:value="{new_event.date}" min={getTodayDate()} required/>
+
+<input class="form-control event-loc" bind:value="{new_event.location}" placeholder="Location" required/>
+
+<textarea class="form-control event-desc" bind:value="{new_event.desc}" rows="4" placeholder="Description" required></textarea>
+
+<button class="btn btn-danger" on:click="{() => (eventForm.set(false))}">Cancel</button>
+<button class="btn btn-primary" on:click="{addEvent}" disabled="{new_event.title.length == 0}">
+    {#if !loading}
+        Add Event
+    {:else}
+        <i class="fa fa-spinner fa-spin"></i>
+    {/if}
+</button>
+
+<style>
+    .event-title {
+        width:100%;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .btn-danger {
+        float:left;
+    }
+
+    .btn-primary {
+        float:right;
+    }
+</style>
