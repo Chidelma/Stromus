@@ -1,5 +1,5 @@
 const Dynamite = require('dynamite');
-import type { _part_sort, _admin, _comment, _user, _event, _organ, _post, _role, _like, _rsvp } from './Interface';
+import type { _part_sort, _admin, _comment, _user, _event, _organ, _post, _role, _like, _rsvp, _chat, _msg } from './Interface';
 
 export default class Dynamo {
 
@@ -8,13 +8,13 @@ export default class Dynamo {
     constructor() {
 
         this.client = new Dynamite.Client({
-            region: process.env.REGION,
-            accessKeyId: process.env.ACCESS_KEY_ID,
-            secretAccessKey: process.env.SECRET_ACCESS_KEY
+            region: 'ca-central-1',
+            accessKeyId: 'AKIARWWN5B3V7K4JMOO7',
+            secretAccessKey: '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'
         });
     }
 
-    async putItem(table_name:string, data:_admin | _comment | _user | _event | _organ | _post | _role | _like | _rsvp):Promise<boolean> {
+    async putItem(table_name:string, data:_admin | _comment | _user | _event | _organ | _post | _role | _like | _rsvp | _chat | _msg):Promise<boolean> {
 
         let added:boolean = false;
 

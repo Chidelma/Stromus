@@ -26,7 +26,7 @@
     async function adminUser() {
 
         if(password == retyped_password) {
-
+ 
             new_user.id = uuidv5(new_user.email, uuidv5.URL);
 
             let key_value:_part_sort = { 
@@ -75,7 +75,7 @@
         <input class="form-control right-half" type="password" placeholder="Retype Password" bind:value="{retyped_password}" required />
 
         
-        <button class="btn btn-primary" on:click="{adminUser}">Sign Up</button>
+        <button class="btn btn-primary" type="submit" on:click="{adminUser}">Sign Up</button>
     {/if}
 </div>
 

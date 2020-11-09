@@ -32,21 +32,14 @@
 
     setInterval(async () => {
         await organ.setup_posts();
+        organ.sort_all();
         posts = organ.get_posts();
     }, 30000);
 
     function set_user(): void {
-
-        let users:User[] = organ.get_users();
-
-        for(let i = 0; i < users.length; i++) {
-
-            if(users[i].get_email() == $admin.get_email()) {
-                user.set(users[i]);
-                can_add_post = users[i].get_role().can_add_post();
-                break;
-            }
-        }
+        let curr_user:User = organ.get_users().find(user => user.get_email() == $admin.get_email());
+        user.set(curr_user);
+        can_add_post = curr_user.get_role().can_add_post();
     }
 
     onMount(() => {

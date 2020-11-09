@@ -17,7 +17,7 @@ export default class Store {
             Storage: {
                 AWSS3: {
                     bucket: 'strom-storage', //REQUIRED -  Amazon S3 bucket name
-                    region: process.env.REGION
+                    region: 'ca-central-1'
                 }
             }
         });

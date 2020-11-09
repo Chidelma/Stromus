@@ -39,12 +39,14 @@
 
         new_post.id = uuidv5(moment().format(), organ.get_id());
 
-        new_post.date = moment().format('MMMM Do YYYY, h:mm:ss a');
+        new_post.date = moment().format('YYYY-MM-DD[T]HH:mm:ss');
 
         let added:boolean = await $dynamo.putItem('POSTS', new_post);
 
         if(added) {
-            organ.add_post(new Post(new_post));
+            let post:Post = new Post(new_post);
+            post.setup_comments();
+            organ.add_post(post);
             postForm.set(false);
             refreshPosts();
         }

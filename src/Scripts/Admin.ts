@@ -52,6 +52,9 @@ export default class Admin {
             await new_organ.setup_users();
             await new_organ.setup_events();
             await new_organ.setup_posts();
+            await new_organ.setup_chats();
+
+            new_organ.sort_all();
 
             this.organs.push(new_organ);
         } 

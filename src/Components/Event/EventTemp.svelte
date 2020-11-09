@@ -24,17 +24,9 @@
     }, 30000);
 
     function set_user() {
-
-        let users:User[] = organ.get_users();
-
-        for(let i = 0; i < users.length; i++) {
-
-            if(users[i].get_email() == $admin.get_email()) {
-                user.set(users[i]);
-                can_add_event = users[i].get_role().can_add_event();
-                break;
-            }
-        }
+        let curr_user:User = organ.get_users().find(user => user.get_email() == $admin.get_email());
+        user.set(curr_user);
+        can_add_event = curr_user.get_role().can_add_event();
     }
 
     onMount(() => {

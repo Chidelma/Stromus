@@ -5,7 +5,7 @@ export default class Event {
     private id:string;
     private organ_id:string;
     private title:string;
-    private date:string;
+    private date_time:string;
     private desc:string;
     private location:string;
     private rsvp:number;
@@ -15,7 +15,7 @@ export default class Event {
         this.id = event.id;
         this.organ_id = event.organ_id;
         this.title = event.title.toUpperCase();
-        this.date = event.date;
+        this.date_time = event.date_time;
         this.desc = event.desc;
         this.location = event.location;
         this.rsvp = 0;
@@ -33,8 +33,8 @@ export default class Event {
         return this.title;
     }
 
-    get_date():string {
-        return this.date;
+    get_date_time():string {
+        return this.date_time;
     }
 
     get_desc():string {

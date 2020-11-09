@@ -27,8 +27,6 @@
             sort_value: user.get_id()
         }
 
-        console.log(key_value);
-
         let result:any = await $dynamo.getItem('RSVP', key_value);
 
         if(result != undefined)
@@ -66,6 +64,25 @@
                 attending = false;
         }
     }
+
+    function get_date(date_time:string):string {
+
+        let year:number = new Date(date_time).getFullYear();
+        let month:number = new Date(date_time).getMonth() + 1;
+        let day:number = new Date(date_time).getDate();
+
+        return year + '-' + month + '-' + day;
+    }
+
+    function get_time(date_time:string):string {
+
+        let hour:number = new Date(date_time).getHours();
+        let minutes:number = new Date(date_time).getMinutes();
+
+        let a:string = hour > 11 ? 'pm' : 'am';
+
+        return hour + ':' + minutes + ' ' + a;
+    }
 </script>
 
 <table cellpadding="5">
@@ -76,7 +93,7 @@
     </tr>
     <tr>
         <td>
-            <span class="date">Date: {event.get_date()}</span>
+            <span class="date">Date: {get_date(event.get_date_time())} Time: {get_time(event.get_date_time())}</span>
         </td>
     </tr>
     <tr>

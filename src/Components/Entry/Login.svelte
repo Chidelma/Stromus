@@ -14,7 +14,7 @@
 
         let { logged, last_name } = await $cognito.signIn(email, password);
 
-        if(logged) {
+        if(logged && last_name != '') {
 
             let key_value:_part_sort = { 
                 part_key: 'id', 
@@ -52,16 +52,18 @@
 </script>
 
 <div id="login"> 
-    <input class="form-control" placeholder="Email" bind:value="{email}" required />
-    <input class="form-control" type="password" placeholder="Password" bind:value="{password}" required />
+    <form>
+        <input class="form-control" placeholder="Email" bind:value="{email}" required />
+        <input class="form-control" type="password" placeholder="Password" bind:value="{password}" on:keydown="{e => e.keyCode == 13 && login()}" required />
 
-    <button class="btn btn-primary" on:click="{login}" disabled="{loading}">
-        {#if !loading}
-            Login
-        {:else}
-            <i class="fa fa-spinner fa-spin"></i>
-        {/if}
-    </button>
+        <button class="btn btn-primary" type="submit" on:click="{login}" disabled="{loading}">
+            {#if !loading}
+                Login
+            {:else}
+                <i class="fa fa-spinner fa-spin"></i>
+            {/if}
+        </button>
+    </form>
 </div>
 
 <style>

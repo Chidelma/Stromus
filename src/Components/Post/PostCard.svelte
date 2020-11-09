@@ -19,14 +19,14 @@
             com_len = post.get_comments().length;
     }, 1000);
 
-    async function showComments():Promise<void> {
+    function showComments() {
         dispatch('message', {
             post: post
         });
     }
 
     function get_time_span(date:string): string {
-        return moment(date, "MMMM Do YYYY, h:mm:ss a").fromNow();
+        return moment(date, "'YYYY-MM-DD[T]HH:mm:ss'").fromNow();
     }
 
     async function likeExist(): Promise<boolean> {

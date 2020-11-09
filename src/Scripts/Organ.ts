@@ -2,7 +2,7 @@ import User from './User';
 import Event from './Event';
 import Role from './Role';
 import Post from './Post';
-import type { _organ, _part_sort, _user, _role, _post, _event } from './Interface';
+import type { _organ, _part_sort, _user, _role, _post, _event, _chat } from './Interface';
 import { $dynamo } from './Init';
 
 export default class Organ {
@@ -22,6 +22,7 @@ export default class Organ {
     private users:User[];
     private events:Event[];
     private posts:Post[];
+    private chats:_chat[];
 
     constructor(organ:_organ) {
 
@@ -103,6 +104,20 @@ export default class Organ {
         }
     }
 
+    async setup_chats() {
+
+        let key_value:_part_sort = {
+            part_key: 'organ_id',
+            part_value: this.id
+        }
+
+        this.chats = await $dynamo.queryItem('CHATS', key_value);
+    }
+
+    find_chat(chat_id:string): _chat {
+        return this.chats.find(chat => chat.chat_id == chat_id);
+    }
+
     async get_rsvp(event_id:string): Promise<number> {
 
         let key_value:_part_sort = {
@@ -162,6 +177,10 @@ export default class Organ {
         }
     }
 
+    sort_all() {
+        this.posts = this.posts.sort((a, b) => new Date(b.get_date()).getTime() - new Date(a.get_date()).getTime());
+    }
+
     get_id():string {
         return this.id;
     }
@@ -215,7 +234,8 @@ export default class Organ {
     }
 
     add_event(event:Event) {
-        this.events.push(event);
+        this.events.unshift(event);
+        this.events = this.events.sort((a, b) => new Date(b.get_date_time()).getTime() - new Date(a.get_date_time()).getTime());
     }
 
     get_posts():Post[] {
@@ -223,6 +243,6 @@ export default class Organ {
     }
 
     add_post(post:Post) {
-        this.posts.push(post);
+        this.posts.unshift(post);
     }
 }

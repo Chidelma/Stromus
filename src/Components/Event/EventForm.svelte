@@ -19,12 +19,15 @@
         });
     }
 
+    let date:string = '';
+    let time:string = '';
+
     let new_event:_event = {
 
         id: '',
         organ_id: organ.get_id(),
 
-        date: '',
+        date_time: '',
         title: '',
         desc: '',
         location: ''
@@ -35,6 +38,8 @@
         loading = true;
 
         new_event.id = uuidv5(moment().format(), organ.get_id());
+
+        new_event.date_time = date + 'T' + time + ':00';
 
         let added:boolean = await $dynamo.putItem('EVENTS', new_event);
 
@@ -59,7 +64,9 @@
 
 <input class="form-control event-title" placeholder="Event Title" bind:value="{new_event.title}" required/>
 
-<input type="date" class="form-control event-date" bind:value="{new_event.date}" min={getTodayDate()} required/>
+<input type="date" class="form-control event-date" bind:value="{date}" min={getTodayDate()} required/>
+
+<input type="time" class="form-control event-time" bind:value="{time}" required/>
 
 <input class="form-control event-loc" bind:value="{new_event.location}" placeholder="Location" required/>
 
@@ -78,6 +85,16 @@
     .event-title {
         width:100%;
         margin-bottom: 20px;
+    }
+
+    .event-date {
+        float:left;
+        width:48%;
+    }
+
+    .event-time {
+        float:right;
+        width:48%
     }
 
     .form-control {

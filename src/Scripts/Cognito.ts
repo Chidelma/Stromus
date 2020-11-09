@@ -9,11 +9,11 @@ export default class Cognito {
 
         Amplify.configure({
             Auth : {
-                identityPoolId: process.env.IDENTITY_POOL_ID,
-                region: process.env.REGION,
-                identityPoolRegion: process.env.REGION,
-                userPoolId: process.env.USER_POOL_ID,
-                userPoolWebClientId: process.env.USER_POOL_WEB_CLIENT_ID
+                identityPoolId: 'us-east-1:1f1d6548-193d-496e-acc6-8d5dc3a09ebc',
+                region: 'ca-central-1',
+                identityPoolRegion: 'ca-central-1',
+                userPoolId: 'ca-central-1_UZxAd5Yq0',
+                userPoolWebClientId: '3hecekg27o2b50rp4bdfb9q9gg'
             }
         });
 

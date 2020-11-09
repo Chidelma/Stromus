@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { _tab } from './Interface';
+import type { _tab, _chatbox } from './Interface';
 
 import Admin from './Admin';
 import Cognito from './Cognito';
@@ -24,6 +24,10 @@ export const userCard = writable(false);
 export const user = writable(null);
 
 let _t:_tab[] = [];
+let _cb:_chatbox[] = [];
+let activeTabs:number[] = []
 
 export const tabs = writable(_t);
+export const chatboxes = writable(_cb);
 export const activeTabValue = writable(1);
+export const activeChatBox = writable(activeTabs);

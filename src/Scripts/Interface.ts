@@ -1,4 +1,5 @@
 import type Organ from './Organ';
+import type Message from './Message';
 
 export interface _admin {
     id:string,
@@ -19,7 +20,7 @@ export interface _event {
     organ_id:string,
     title:string,
     desc:string,
-    date:string,
+    date_time:string,
     location:string
 }
 
@@ -96,6 +97,15 @@ export interface _tab {
     organ?:Organ
 }
 
+export interface _chatbox {
+
+    name:string,
+    value:number,
+    chat_id?:string,
+    user_id?:string,
+    messages:Message[]
+}
+
 export interface _like {
 
     post_id:string,
@@ -106,6 +116,24 @@ export interface _rsvp {
 
     event_id:string,
     user_id:string
+}
+
+export interface _chat {
+
+    organ_id:string,
+    chat_id:string
+}
+
+export interface _msg {
+
+    id:string,
+    chat_id:string,
+
+    user_id:string,
+    message:string,
+    date:string,
+    name:string,
+    photo:string
 }
 
 export interface _part_sort {
