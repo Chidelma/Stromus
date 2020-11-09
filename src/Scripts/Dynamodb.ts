@@ -8,9 +8,9 @@ export default class Dynamo {
     constructor() {
 
         this.client = new Dynamite.Client({
-            region: 'ca-central-1',
-            accessKeyId: 'AKIARWWN5B3V7K4JMOO7',
-            secretAccessKey: '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'
+            region: process.env,
+            accessKeyId: process.env,
+            secretAccessKey: process.env
         });
     }
 
