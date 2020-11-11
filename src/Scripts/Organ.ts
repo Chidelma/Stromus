@@ -2,8 +2,8 @@ import User from './User';
 import Event from './Event';
 import Role from './Role';
 import Post from './Post';
-import type { _organ, _part_sort, _user, _role, _post, _event, _chat } from './Interface';
-import { $dynamo } from './Init';
+import type { _organ, _part_sort, _user, _role, _post, _event, _chat, _pending } from './Interface';
+import { $dynamo, $admin } from './Init';
 
 export default class Organ {
 
@@ -23,6 +23,9 @@ export default class Organ {
     private events:Event[];
     private posts:Post[];
     private chats:_chat[];
+    private pends:_pending[];
+
+    private user:User;
 
     constructor(organ:_organ) {
 
@@ -48,13 +51,20 @@ export default class Organ {
             part_value: this.id
         }
 
+        this.pends = await $dynamo.queryItem('PENDING', key_value);
+
         let user_results:_user[] = await $dynamo.queryItem('USERS', key_value);
 
         for(let i = 0; i < user_results.length; i++) {
 
-            let user:User = new User(user_results[i]);
+            let user:User = new User();
+
+            user.set_user(user_results[i]);
 
             user.set_role(await this.get_role(user.get_id()));
+
+            if(user.get_email() == $admin.get_email())
+                this.user = user;
 
             this.users.push(user);
         }
@@ -94,13 +104,20 @@ export default class Organ {
 
         let event_results:_event[] = await $dynamo.queryItem('EVENTS', key_value);
 
+        let today_date:Date = new Date();
+
         for(let i = 0; i < event_results.length; i++) {
 
-            let new_event:Event = new Event(event_results[i]);
+            let event_date:Date = new Date(event_results[i].date_time);
 
-            new_event.set_rsvp(await this.get_rsvp(event_results[i].id));
+            if(today_date.getTime() <= event_date.getTime()) {
 
-            this.events.push(new_event);
+                let new_event:Event = new Event(event_results[i]);
+
+                new_event.set_rsvp(await this.get_rsvp(event_results[i].id));
+
+                this.events.push(new_event);
+            }
         }
     }
 
@@ -244,5 +261,17 @@ export default class Organ {
 
     add_post(post:Post) {
         this.posts.unshift(post);
+    }
+
+    get_user():User {
+        return this.user;
+    }
+
+    add_pend(pend:_pending) {
+        this.pends.push(pend);
+    }
+
+    get_pends():_pending[] {
+        return this.pends;
     }
 }

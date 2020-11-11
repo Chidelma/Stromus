@@ -1,9 +1,10 @@
 <script lang="ts">
     import type Message from '../Scripts/Message';
-    import { user } from '../Scripts/Init';
     import moment from 'moment';
+    import type User from '../Scripts/User';
 
     export let messages:Message[] = [];
+    export let user:User;
 
     function get_time_span(date:string): string {
         return moment(date, 'YYYY-MM-DD[T]HH:mm:ss').fromNow();
@@ -14,7 +15,7 @@
     {#if i > 0 && message.get_user_id() == messages[i - 1].get_user_id()}
         <article>   
             <div class="blank-img"></div>
-            {#if message.get_user_id() == $user.get_id()}
+            {#if message.get_user_id() == user.get_id()}
                 <span class="my-msg">{message.get_msg()}</span>
             {:else}
                 <span class="oda-msg">{message.get_msg()}</span>
@@ -25,7 +26,7 @@
             <span class="name">{message.get_name().toLowerCase()}</span>
             <span class="date">{get_time_span(message.get_date())}</span>
             <img src="{message.get_photo()}" alt="profile"/>
-            {#if message.get_user_id() == $user.get_id()}
+            {#if message.get_user_id() == user.get_id()}
                 <span class="my-msg">{message.get_msg()}</span>
             {:else}
                 <span class="oda-msg">{message.get_msg()}</span>

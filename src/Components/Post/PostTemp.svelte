@@ -2,62 +2,52 @@
     import type Organ from '../../Scripts/Organ';
     import type User from '../../Scripts/User';
     import type { _post, _part_sort } from '../../Scripts/Interface';
-    import { admin, postForm, user, comForm } from '../../Scripts/Init';
-    import type Post from '../../Scripts/Post';
+    import { postForm, comForm, server } from '../../Scripts/Init';
+    import Post from '../../Scripts/Post';
     import PostCard from './PostCard.svelte';
     import Blur from '../BlurScreen.svelte';
     import Form from './PostForm.svelte';
     import Temp from '../Comment/ComTemp.svelte';
-    import { onMount } from 'svelte';
 
     export let organ:Organ;
+    export let user:User;
 
     let posts:Post[] = organ.get_posts();
-    let can_add_post:boolean = false;
+    let can_add_post:boolean = user.get_role().can_add_post();
 
     let show_post:Post;
+
+    $server.on('recv-post', _post => {
+
+        let new_post:Post = new Post(_post);
+        new_post.setup_comments();
+        organ.add_post(new_post);
+        posts = organ.get_posts();
+        postForm.set(false);
+        
+    });
 
     function showComments(event:any) :void {
         show_post = event.detail.post;
         comForm.set(true);
     }
 
-    function refreshPosts(event:any) :void {
-        posts = organ.get_posts();
-    }
-
     function updatePost(event:any) :void {
         organ.change_post(event.detail.post);
     }
-
-    setInterval(async () => {
-        await organ.setup_posts();
-        organ.sort_all();
-        posts = organ.get_posts();
-    }, 30000);
-
-    function set_user(): void {
-        let curr_user:User = organ.get_users().find(user => user.get_email() == $admin.get_email());
-        user.set(curr_user);
-        can_add_post = curr_user.get_role().can_add_post();
-    }
-
-    onMount(() => {
-        set_user();
-    });
 </script>
 
 {#if $postForm}
     <Blur/>
     <div id="post-form">
-        <Form user={$user} {organ} on:message={refreshPosts} />
+        <Form {user} {organ} />
     </div>
 {/if}
 
 {#if $comForm}
     <Blur/>
     <div id="com-form">
-        <Temp post={show_post} user={$user} on:message={updatePost} />
+        <Temp post={show_post} {user} on:message={updatePost} />
     </div>
 {/if}
 
@@ -81,7 +71,7 @@
 {:else}
     <div class="post-scroll">
         {#each posts as post}
-            <PostCard {post} user={$user} on:message={showComments}/>
+            <PostCard {post} {user} on:message={showComments}/>
             <hr/>
         {/each}
     </div>

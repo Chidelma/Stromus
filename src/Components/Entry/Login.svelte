@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { dynamo, admin, cognito, isAuth } from '../../Scripts/Init';
+    import { dynamo, admin, cognito, isAuth, server } from '../../Scripts/Init';
     import type { _admin, _organ, _part_sort } from '../../Scripts/Interface';
     import { v5 as uuidv5 } from 'uuid';
 
@@ -39,7 +39,9 @@
                 code: admin_result.code
             }
 
-            await $admin.set_admin(log_user);     
+            await $admin.set_admin(log_user);  
+            
+            $server.emit('set-id', log_user.email);
 
             isAuth.set(true);
         } else {
@@ -54,7 +56,7 @@
 <div id="login"> 
     <form>
         <input class="form-control" placeholder="Email" bind:value="{email}" required />
-        <input class="form-control" type="password" placeholder="Password" bind:value="{password}" on:keydown="{e => e.keyCode == 13 && login()}" required />
+        <input class="form-control" type="password" placeholder="Password" bind:value="{password}" on:keydown="{e => e.key === 'ENter' && login()}" required />
 
         <button class="btn btn-primary" type="submit" on:click="{login}" disabled="{loading}">
             {#if !loading}

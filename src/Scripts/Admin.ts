@@ -1,5 +1,5 @@
 import Organ from './Organ';
-import type { _admin, _part_sort, _organ } from './Interface';
+import type { _admin, _part_sort, _organ, _invite } from './Interface';
 import { $dynamo } from './Init';
 
 export default class Admin {
@@ -18,9 +18,11 @@ export default class Admin {
     private country:string;
 
     private organs:Organ[];
+    private invites:_invite[];
     
     constructor() {  
         this.organs = [];
+        this.invites = [];
     }
 
     async set_admin(admin:_admin) {
@@ -39,6 +41,13 @@ export default class Admin {
         this.country = admin.country.toUpperCase();
 
         let key_value:_part_sort = {
+            part_key: 'email',
+            part_value: admin.email
+        }
+
+        this.invites = await $dynamo.queryItem('INVITES', key_value);
+
+        key_value = {
             part_key: 'admin_id',
             part_value: admin.id
         }
@@ -66,6 +75,14 @@ export default class Admin {
 
     add_organ(organ:Organ) {
         this.organs.push(organ);
+    }
+
+    add_invite(invite:_invite) {
+        this.invites.push(invite);
+    }
+
+    get_invites():_invite[] {
+        return this.invites;
     }
 
     get_organs():Organ[] {

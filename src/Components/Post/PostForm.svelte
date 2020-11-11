@@ -1,25 +1,15 @@
 <script lang="ts">
-    import { dynamo, postForm } from '../../Scripts/Init';
+    import { postForm, server } from '../../Scripts/Init';
     import type { _organ, _role, _user, _part_sort, _post } from '../../Scripts/Interface';
     import type Organ from '../../Scripts/Organ';
     import type User from '../../Scripts/User';
     import { v5 as uuidv5 } from 'uuid';
-    import Post from '../../Scripts/Post';
     import moment from 'moment';
-    import { createEventDispatcher } from 'svelte';
 
     export let user:User;
     export let organ:Organ;
 
     let loading:boolean = false;
-
-    const dispatch = createEventDispatcher();
-
-    function refreshPosts():void {
-        dispatch('message', {
-            text: 'refresh!'
-        });
-    }
 
     let new_post:_post = {
 
@@ -33,7 +23,7 @@
         msg: ''
     }
 
-    async function addPost() {
+    function addPost() {
 
         loading = true;
 
@@ -41,15 +31,7 @@
 
         new_post.date = moment().format('YYYY-MM-DD[T]HH:mm:ss');
 
-        let added:boolean = await $dynamo.putItem('POSTS', new_post);
-
-        if(added) {
-            let post:Post = new Post(new_post);
-            post.setup_comments();
-            organ.add_post(post);
-            postForm.set(false);
-            refreshPosts();
-        }
+        $server.emit('add-post', new_post);
 
         loading = false;
     }

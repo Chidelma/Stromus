@@ -1,22 +1,27 @@
 <script lang="ts">
     import type Organ from '../../Scripts/Organ';
+    import type User from '../../Scripts/User';
     import USERS from '../User/UserTemp.svelte';
     import POSTS from '../Post//PostTemp.svelte';
     import EVENTS from '../Event/EventTemp.svelte';
+    import { admin, server } from '../../Scripts/Init';
 
     export let organ:Organ;
+    let user:User = organ.get_user();
+
+    $server.emit('join-organ', (organ.get_id()) );
 </script>
 
 <div id="posts">
-    <POSTS {organ} />
+    <POSTS {organ} {user} />
 </div>
 
 <div id="events">
-    <EVENTS {organ} />
+    <EVENTS {organ} {user} />
 </div>
 
 <div id="users">
-    <USERS {organ} />
+    <USERS {organ} {user} />
 </div>
 
 <style>

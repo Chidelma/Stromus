@@ -1,111 +1,77 @@
-const Dynamite = require('dynamite');
 import type { _part_sort, _admin, _comment, _user, _event, _organ, _post, _role, _like, _rsvp, _chat, _msg } from './Interface';
+import { invokeApi } from './Fetch';
 
 export default class Dynamo {
 
-    client:any;
-
-    constructor() {
-
-        this.client = new Dynamite.Client({
-            region: process.env,
-            accessKeyId: process.env,
-            secretAccessKey: process.env
-        });
-    }
-
     async putItem(table_name:string, data:_admin | _comment | _user | _event | _organ | _post | _role | _like | _rsvp | _chat | _msg):Promise<boolean> {
 
-        let added:boolean = false;
+        let res:any = await invokeApi('http://localhost:4000/putitem', { table_name, data });
 
-        let item:any = await this.client.putItem(table_name, data).execute();
+        //console.log(res);
 
-        if(item.result != undefined)
-            added = true;
-
-        return added;
+        return res.msg;
     }
 
     async getItem(table_name:string, data:_part_sort):Promise<any> {
 
-        let item:any = await this.client.getItem(table_name)
-                                        .setHashKey(data.part_key, data.part_value)
-                                        .setRangeKey(data.sort_key, data.sort_value)
-                                        .execute();
+        let res:any = await invokeApi('http://localhost:4000/getitem', { table_name, data });
 
-        return item.result;
+        //console.log(res);
+
+        return res.msg;
     }
 
     async removeItem(table_name:string, data:_part_sort):Promise<boolean> {
 
-        let deleted:boolean = false;
+        let res:any = await invokeApi('http://localhost:4000/removeitem', { table_name, data });
 
-        let item:any = await this.client.deleteItem(table_name)
-                                        .setHashKey(data.part_key, data.part_value)
-                                        .setRangeKey(data.sort_key, data.sort_value)
-                                        .execute();
+        //console.log(res);
 
-        if(item.result == null)
-            deleted = true;
-
-        return deleted;
+        return res.msg;
     }
 
     async updateItem(table_name:string, data:_part_sort, key_attr:string, value_attr:string):Promise<any> {
 
-        let item:any = await this.client.newUpdateBuilder(table_name)
-                                        .setHashKey(data.part_key, data.part_value)
-                                        .setRangeKey(data.sort_key, data.sort_value)
-                                        .enableUpsert()
-                                        .putAttribute(key_attr, value_attr)
-                                        .execute();
+        let res:any = await invokeApi('http://localhost:4000/updateitem', { table_name, data, key_attr, value_attr });
 
-        return item.result;
+        //console.log(res);
+        
+        return res.msg;
     }
 
     async queryItem(table_name:string, data:_part_sort):Promise<any[]> {
 
-        let items:any = await this.client.newQueryBuilder(table_name)
-                                         .setHashKey(data.part_key, data.part_value)
-                                         .execute();
+        let res:any = await invokeApi('http://localhost:4000/queryitem', { table_name, data });
 
-        return items.result;
+        //console.log(res);
+
+        return res.msg;
     }
 
     async queryIndex(table_name:string, index_name:string, data:_part_sort):Promise<any[]> {
 
-        let items:any = await this.client.newQueryBuilder(table_name)
-                                         .setIndexName(index_name)
-                                         .setHashKey(data.part_key, data.part_value)
-                                         .execute();
+        let res:any = await invokeApi('http://localhost:4000/queryindex', { table_name, index_name, data });
 
-        return items.result;
+        //console.log(res);
+        
+        return res.msg;
     }
 
     async upDownLikes(data:_part_sort, value:number):Promise<boolean> {
 
-        let changed:boolean = false;
+        let res:any = await invokeApi('http://localhost:4000/updownlikes', { data, value });
 
-        let item:any = await this.client.newUpdateBuilder('POSTS')
-                                        .setHashKey(data.part_key, data.part_value)
-                                        .setRangeKey(data.sort_key, data.sort_value)
-                                        .enableUpsert()
-                                        .addToAttribute('likes', value)
-                                        .execute();
+        //console.log(res);
 
-        if(item.result != undefined)
-            changed = true
-
-        return changed;
+        return res.msg;
     }
 
     async getCount(table_name:string, data:_part_sort):Promise<number> {
 
-        let items:any = await this.client.newQueryBuilder(table_name)
-                                         .setHashKey(data.part_key, data.part_value)
-                                         .getCount()
-                                         .execute();
+        let res:any = await invokeApi('http://localhost:4000/getcount', { table_name, data });
 
-        return items.Count;
+        //console.log(res);
+        
+        return res.msg;
     }
 }

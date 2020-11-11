@@ -1,50 +1,37 @@
 <script lang="ts">
     import type Organ from '../../Scripts/Organ';
-    import type Event from '../../Scripts/Event';
+    import Event from '../../Scripts/Event';
     import type { _user, _role, _event, _part_sort } from '../../Scripts/Interface';
-    import { eventForm, admin, user } from '../../Scripts/Init';
+    import { eventForm, server } from '../../Scripts/Init';
     import type User from '../../Scripts/User';
     import EventCard from './EventCard.svelte';
     import Blur from '../BlurScreen.svelte';
     import Form from './EventForm.svelte';
-    import { onMount } from 'svelte';
 
     export let organ:Organ;
+    export let user:User;
 
     let events:Event[] = organ.get_events();
-    let can_add_event:boolean = false;
+    let can_add_event:boolean = user.get_role().can_add_event();
 
-    function refreshEvents(event:any): void {
+    $server.on('recv-event', _event => {
+        organ.add_event(new Event(_event));
         events = organ.get_events();
-    }
-
-    setInterval(async () => {
-        await organ.setup_events();
-        events = organ.get_events();
-    }, 30000);
-
-    function set_user() {
-        let curr_user:User = organ.get_users().find(user => user.get_email() == $admin.get_email());
-        user.set(curr_user);
-        can_add_event = curr_user.get_role().can_add_event();
-    }
-
-    onMount(() => {
-        set_user();
+        eventForm.set(false);
     });
 </script>
 
 {#if $eventForm}
     <Blur/>
     <div id="event-form">
-        <Form {organ} on:message={refreshEvents}/>
+        <Form {organ} />
     </div>
 {/if}
 
 <table class="heading">
     <tr>
         <td>
-            <h5>Events</h5>
+            <h5>Upcoming Events</h5>
         </td>
         <td>
             {#if can_add_event}
@@ -61,7 +48,7 @@
 {:else}
     <div class="event-scroll">
         {#each events as event}
-            <EventCard {event} user={$user} />
+            <EventCard {event} {user} />
             <hr/>
         {/each}
     </div>

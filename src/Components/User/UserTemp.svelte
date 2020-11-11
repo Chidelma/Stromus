@@ -1,34 +1,58 @@
 <script lang="ts">
     import type Organ from '../../Scripts/Organ';
     import type User from '../../Scripts/User';
-    import type { _user, _role, _part_sort } from '../../Scripts/Interface';
-    import { userForm, admin, user, userCard } from '../../Scripts/Init';
+    import type { _user, _role, _part_sort, _pending } from '../../Scripts/Interface';
+    import { userForm, userCard, server, admin, online } from '../../Scripts/Init';
     import Blur from '../BlurScreen.svelte';
     import Form from './UserForm.svelte';
     import Card from './UserCard.svelte';
-    import { onMount } from 'svelte';
 
     export let organ:Organ;
+    export let user:User;
+
+    $server.emit('go-online', {
+        user_id: user.get_id(),
+        organ_id: organ.get_id()
+    });
 
     let users:User[] = organ.get_users();
+    let pends:_pending[] = organ.get_pends();
+
+    let view_user:User;
+
     let can_add_user:boolean = false;
-    let curr_user:User;
     let search_user:string = '';
 
-    setInterval(async () => {
-        await organ.setup_users();
-        users = organ.get_users();
-    }, 30000);
+    $server.on('recv-invite', _pend => {
+        organ.add_pend(_pend);
+        pends = organ.get_pends();
+    });
 
-    function refreshUsers(event:any):void {
-        users = organ.get_users();
-    }
+    $server.on('online', (user_id) => {
 
-    function set_user(): void {
-        let curr_user:User = organ.get_users().find(user => user.get_email() == $admin.get_email());
-        user.set(curr_user);
-        can_add_user = curr_user.get_role().can_add_user();
-    }
+        $online.add(user_id);
+
+        online.set($online);
+
+        $server.emit('go-online', {
+            user_id: user.get_id(),
+            organ_id: organ.get_id(),
+            admin_id: $admin.get_id()
+        });
+    });
+
+    $server.on('offline', (user_id) => {
+
+        $online.delete(user_id);
+
+        online.set($online);
+
+        $server.emit('go-online', {
+            user_id: user.get_id(),
+            organ_id: organ.get_id(),
+            admin_id: $admin.get_id()
+        });
+    });
 
     function find_user(): void {
         if(search_user.length > 0)
@@ -36,27 +60,23 @@
     }
 
     function viewUser(user:User) {
-        user.set_posts(organ.get_posts().filter(post => post.get_user_id() == user.get_id()));
-        curr_user = user;
+        view_user = user;
+        view_user.set_posts(organ.get_posts().filter(post => post.get_user_id() == user.get_id()));
         userCard.set(true);
     }
-
-    onMount(() => {
-        set_user();
-    });
 </script>
 
 {#if $userForm}
     <Blur/>
     <div id="user-form">
-        <Form {organ} on:message={refreshUsers} />
+        <Form {organ} />
     </div>
 {/if}
 
 {#if $userCard}
     <Blur/>
     <div id="user-card">
-        <Card {curr_user} {organ} />
+        <Card {user} {view_user} {organ} />
     </div>
 {/if}
 
@@ -79,8 +99,21 @@
 
 <div class="user-scroll">
     {#each users as user}
-        <button class="btn btn-light user" on:click="{() => (viewUser(user))}">
-            {user.get_last_name()}, {user.get_first_name().toLowerCase()}
+        <button class="btn btn-light user btn-sm" on:click="{() => (viewUser(user))}">
+            {#if $online.has(user.get_id())}
+                <i class="fa fa-circle"></i>
+            {/if}
+
+             {user.get_last_name()}, {user.get_first_name().toLowerCase()}
+        </button>
+        <hr/>
+    {/each}
+
+    <h5>Pending</h5>
+    <hr/>
+    {#each pends as pend}
+        <button class="btn btn-light user btn-sm">
+            {pend.email}
         </button>
         <hr/>
     {/each}
@@ -99,6 +132,11 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 0.4rem;
         transform: translate(-50%, 0);
+    }
+
+    .fa-circle {
+        font-size: smaller;
+        color:green;
     }
 
     .form-control {

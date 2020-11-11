@@ -3,18 +3,16 @@
     import type User from "../../Scripts/User";
     import type { _part_sort, _rsvp } from '../../Scripts/Interface';
     import { dynamo } from '../../Scripts/Init';
+    import { onMount } from 'svelte';
 
     export let event:Event;
     export let user:User;
 
     let attending:boolean = false;
 
-    let checkRsvp = setInterval(async () => {
-        if(user != null) {
-            attending = await rsvpExist();
-            clearInterval(checkRsvp);
-        }
-    }, 1000);
+    onMount(async () => {
+        attending = await rsvpExist();
+    });
 
     async function rsvpExist(): Promise<boolean> {
 

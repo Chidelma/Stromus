@@ -1,23 +1,13 @@
 <script lang="ts">
-    import { dynamo, eventForm } from '../../Scripts/Init';
+    import { eventForm, server } from '../../Scripts/Init';
     import type { _event } from '../../Scripts/Interface';
     import type Organ from '../../Scripts/Organ';
     import { v5 as uuidv5 } from 'uuid';
-    import Event from '../../Scripts/Event';
     import moment from 'moment';
-    import { createEventDispatcher } from 'svelte';
 
     export let organ:Organ;
 
     let loading:boolean = false;
-
-    const dispatch = createEventDispatcher();
-
-    function refreshEvents():void {
-        dispatch('message', {
-            text: 'refresh!'
-        });
-    }
 
     let date:string = '';
     let time:string = '';
@@ -33,7 +23,7 @@
         location: ''
     }
 
-    async function addEvent() {
+    function addEvent() {
 
         loading = true;
 
@@ -41,13 +31,7 @@
 
         new_event.date_time = date + 'T' + time + ':00';
 
-        let added:boolean = await $dynamo.putItem('EVENTS', new_event);
-
-        if(added) {
-            organ.add_event(new Event(new_event));
-            eventForm.set(false);
-            refreshEvents();
-        }
+        $server.emit('add-event', new_event);
 
         loading = false;
     }

@@ -1,5 +1,6 @@
 import type Organ from './Organ';
 import type Message from './Message';
+import type User from './User';
 
 export interface _admin {
     id:string,
@@ -13,6 +14,18 @@ export interface _admin {
     state:string,
     code:string,
     country:string
+}
+
+export interface _invite {
+    email:string,
+    user_id:string,
+    organ_id:string,
+}
+
+export interface _pending {
+    organ_id:string,
+    email:string,
+    user_id:string
 }
 
 export interface _event {
@@ -102,7 +115,8 @@ export interface _chatbox {
     name:string,
     value:number,
     chat_id?:string,
-    user_id?:string,
+    user_one?:User,
+    user_two?:User,
     messages:Message[]
 }
 

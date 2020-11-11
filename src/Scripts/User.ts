@@ -15,8 +15,9 @@ export default class User {
     private role:Role;
     private posts:Post[];
 
-    constructor(user:_user) {
+    constructor() {}
 
+    set_user(user:_user) {
         this.id = user.id;
         this.organ_id = user.organ_id;
 
