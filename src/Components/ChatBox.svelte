@@ -17,23 +17,13 @@
 
     $server.emit('join-chat', box.chat_id);
 
-    $server.on('recv-msg', async (msg) => {
-
-        user_msg = '';
-
-        let new_message:_msg = {
-            id: uuidv5(moment().format(), box.chat_id),
-            name: box.user_one.get_first_name() + ' ' + box.user_one.get_last_name(),
-            user_id: box.user_one.get_id(),
-            message: msg,
-            chat_id: box.chat_id,
-            photo: box.user_one.get_photo(),
-            date: moment().format('YYYY-MM-DD[T]HH:mm:ss')
+    $server.on('recv-msg', async (data) => {
+        if(data.chat_id == box.chat_id) {
+            user_msg = '';
+            box.messages.push(new Message(data));
+            div.scrollTo(0, div.scrollHeight);
+            refresh();
         }
-
-        box.messages.push(new Message(new_message));
-        div.scrollTo(0, div.scrollHeight);
-        refresh();
     });
 
     afterUpdate(() => {
@@ -148,7 +138,7 @@
             <Messages messages={box.messages} user={box.user_one} />
         </div>
         <div class="msg">
-            <input class="form-control" placeholder="Message {box.name}" bind:value="{user_msg}" on:keydown="{e => e.key === 'Enter' && sendMsg()}"/>
+            <input class="msg-box" placeholder="Message {box.name}" bind:value="{user_msg}" on:keydown="{e => e.key === 'Enter' && sendMsg()}"/>
         </div>
     </div>
 {:else}
@@ -190,8 +180,11 @@
         height:10%;
     }
 
-    .form-control {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    .msg-box {
+        width:100%;
+        background-color: #eee;
+        outline: none;
+        border: none;
     }
 
     i {
@@ -209,7 +202,7 @@
 		margin: 0 0 0.5em 0;
 		overflow-y: auto;
         width:100%;
-        height:78%;
+        height:79%;
 	}
   
     span {

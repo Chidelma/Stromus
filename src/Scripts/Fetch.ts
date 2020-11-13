@@ -1,6 +1,6 @@
-export async function invokeApi(url:string, load:any): Promise<any> {
+export async function invokeApi(api:string, load:any): Promise<any> {
 
-    const response = await fetch(url, {
+    const response = await fetch('http://localhost:4000' + api, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

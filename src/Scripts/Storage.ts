@@ -4,20 +4,20 @@ export default class Store {
 
     store:any;
 
-    constructor() {
+    constructor(env:any) {
 
         Amplify.configure({
             Auth : {
-                identityPoolId: process.env.IDENTITY_POOL_ID,
-                region: process.env.REGION,
-                identityPoolRegion: process.env.REGION,
-                userPoolId: process.env.USER_POOL_ID,
-                userPoolWebClientId: process.env.USER_POOL_WEB_CLIENT_ID
+                identityPoolId: env.IDENTITY_POOL_ID,
+                region: env.REGION,
+                identityPoolRegion: env.REGION,
+                userPoolId: env.USER_POOL_ID,
+                userPoolWebClientId: env.USER_POOL_WEB_CLIENT_ID
             },
             Storage: {
                 AWSS3: {
                     bucket: 'strom-storage', //REQUIRED -  Amazon S3 bucket name
-                    region: 'ca-central-1'
+                    region: env.REGION
                 }
             }
         });

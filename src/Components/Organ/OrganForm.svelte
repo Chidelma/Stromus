@@ -98,7 +98,9 @@
             email: $admin.get_email()
         }
 
-        let first_user:User = new User(curr_user);
+        let first_user:User = new User();
+
+        first_user.set_user(curr_user);
 
         await $dynamo.putItem('USERS', curr_user);
 
@@ -110,14 +112,14 @@
 
 <hr/>
 
-<input class="form-control" placeholder="Organisation Name" bind:value="{new_organ.name}" required />
+<input class="organ-form" placeholder="Organisation Name" bind:value="{new_organ.name}" required />
 
-<input class="form-control" type="date" placeholder="birthday" bind:value="{new_organ.founded}" />
-<input class="form-control" placeholder="Address" bind:value="{new_organ.address}" />
-<input class="form-control left-half" placeholder="City" bind:value="{new_organ.city}"/>
-<input class="form-control right-half" placeholder="State/province" bind:value="{new_organ.state}" />
-<input class="form-control left-half" placeholder="Country" bind:value="{new_organ.country}" />
-<input class="form-control right-half" placeholder="Postal/Zip Code" bind:value="{new_organ.code}" />
+<input class="organ-form" type="date" placeholder="birthday" bind:value="{new_organ.founded}" />
+<input class="organ-form" placeholder="Address" bind:value="{new_organ.address}" />
+<input class="organ-form left-half" placeholder="City" bind:value="{new_organ.city}"/>
+<input class="organ-form right-half" placeholder="State/province" bind:value="{new_organ.state}" />
+<input class="organ-form left-half" placeholder="Country" bind:value="{new_organ.country}" />
+<input class="organ-form right-half" placeholder="Postal/Zip Code" bind:value="{new_organ.code}" />
 
 <button class="btn btn-danger" on:click="{() => (organForm.set(false))}">Cancel</button>
 <button class="btn btn-primary" on:click="{addOrgan}" disabled="{new_organ.name.length == 0}">
@@ -133,8 +135,13 @@
         text-align: center;
     }
 
-    .form-control {
+    .organ-form {
+        width:100%;
+        background-color: #eee;
+        outline: none;
+        border: none;
         margin-bottom:20px;
+        border-radius: 0.2rem;
     }
 
     .left-half {

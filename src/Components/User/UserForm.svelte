@@ -45,7 +45,7 @@
         return user_exist;
     }
 
-    async function addUser() {
+    function addUser() {
 
         loading = true;
 
@@ -69,7 +69,7 @@
 
 <hr/>
 
-<input class="form-control" placeholder="Email" bind:value="{new_invite.email}" required/>
+<input class="user-form" placeholder="Email" bind:value="{new_invite.email}" required/>
 
 <h5>Role</h5>
 <hr/>
@@ -197,9 +197,13 @@
 </button>
 
 <style>
-    .form-control {
+    .user-form {
+        width:100%;
+        background-color: #eee;
+        border: none;
+        outline:none;
+        border-radius: 0.2rem;
         margin-bottom: 20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 
     .btn-danger {
@@ -208,10 +212,6 @@
 
     .btn-primary {
         float:right;
-    }
-
-    .form-control {
-        margin-bottom:20px;
     }
 
     h5 {

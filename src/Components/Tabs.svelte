@@ -1,10 +1,43 @@
 <script lang="ts">
-    import { activeTabValue } from '../Scripts/Init';
+    import { activeTabValue, server, postForm, eventForm } from '../Scripts/Init';
     import type { _tab } from '../Scripts/Interface';
+    import Post from '../Scripts/Post';
+    import Event from '../Scripts/Event';
 
     export let tabs:_tab[] = [];
 
     let lastTabValue:number = 1;
+
+    $server.on('recv-post', _post => {
+        for(let i = 1; i < tabs.length; i++) {
+            if(tabs[i].organ.get_id() == _post.organ_id) {
+                let new_post:Post = new Post(_post);
+                new_post.setup_comments();
+                tabs[i].organ.add_post(new_post);
+                postForm.set(false);
+                break;
+            }
+        }
+    });
+
+    $server.on('recv-event', _event => {
+        for(let i = 1; i < tabs.length; i++) {
+            if(tabs[i].organ.get_id() == _event.organ_id) {
+                tabs[i].organ.add_event(new Event(_event));
+                eventForm.set(false);
+                break;
+            }
+        }
+    });
+
+    $server.on('recv-invite', _pend => {
+        for(let i = 1; i < tabs.length; i++) {
+            if(tabs[i].organ.get_id() == _pend.organ_id) {
+                tabs[i].organ.add_pend(_pend);
+                break;
+            }
+        }
+    });
 
     function handleClick(tabValue:number) {
         lastTabValue = $activeTabValue;

@@ -55,8 +55,8 @@
 
 <div id="login"> 
     <form>
-        <input class="form-control" placeholder="Email" bind:value="{email}" required />
-        <input class="form-control" type="password" placeholder="Password" bind:value="{password}" on:keydown="{e => e.key === 'ENter' && login()}" required />
+        <input class="login-form" placeholder="Email" bind:value="{email}" required />
+        <input class="login-form" type="password" placeholder="Password" bind:value="{password}" on:keydown="{e => e.key === 'ENter' && login()}" required />
 
         <button class="btn btn-primary" type="submit" on:click="{login}" disabled="{loading}">
             {#if !loading}
@@ -73,11 +73,16 @@
         width:300px;
         margin: 0 auto;
         margin-top:25%;
+        padding:10px;
     }
 
-    .form-control {
+    .login-form {
         margin-bottom:20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        background-color: #eee;
+        width:100%;
+        outline: none;
+        border: none;
+        border-radius: 0.2rem;
     }
 
     .btn {

@@ -4,12 +4,12 @@
     import USERS from '../User/UserTemp.svelte';
     import POSTS from '../Post//PostTemp.svelte';
     import EVENTS from '../Event/EventTemp.svelte';
-    import { admin, server } from '../../Scripts/Init';
+    import { server } from '../../Scripts/Init';
 
     export let organ:Organ;
     let user:User = organ.get_user();
 
-    $server.emit('join-organ', (organ.get_id()) );
+    $server.emit('join-organ', organ.get_id());
 </script>
 
 <div id="posts">

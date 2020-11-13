@@ -58,21 +58,21 @@
     {#if showCode}
         <Code/>
     {:else}
-        <input class="form-control left-half" placeholder="First Name" bind:value="{new_user.first_name}" required />
-        <input class="form-control right-half" placeholder="Last Name" bind:value="{new_user.last_name}" required />
+        <input class="signup left-half" placeholder="First Name" bind:value="{new_user.first_name}" required />
+        <input class="signup right-half" placeholder="Last Name" bind:value="{new_user.last_name}" required />
 
-        <input class="form-control" type="date" placeholder="birthday" bind:value="{new_user.birthday}" />
-        <input class="form-control" placeholder="Address" bind:value="{new_user.address}" />
-        <input class="form-control left-half" placeholder="City" bind:value="{new_user.city}"/>
-        <input class="form-control right-half" placeholder="State/province" bind:value="{new_user.state}" />
-        <input class="form-control left-half" placeholder="Country" bind:value="{new_user.country}" />
-        <input class="form-control right-half" placeholder="Postal/Zip Code" bind:value="{new_user.code}" />
+        <input class="signup" type="date" placeholder="birthday" bind:value="{new_user.birthday}" />
+        <input class="signup" placeholder="Address" bind:value="{new_user.address}" />
+        <input class="signup left-half" placeholder="City" bind:value="{new_user.city}"/>
+        <input class="signup right-half" placeholder="State/province" bind:value="{new_user.state}" />
+        <input class="signup left-half" placeholder="Country" bind:value="{new_user.country}" />
+        <input class="signup right-half" placeholder="Postal/Zip Code" bind:value="{new_user.code}" />
 
         <hr/>
 
-        <input class="form-control" type="email" placeholder="Email" bind:value="{new_user.email}" required />
-        <input class="form-control left-half" type="password" placeholder="Password" bind:value="{password}" required />
-        <input class="form-control right-half" type="password" placeholder="Retype Password" bind:value="{retyped_password}" required />
+        <input class="signup" type="email" placeholder="Email" bind:value="{new_user.email}" required />
+        <input class="signup left-half" type="password" placeholder="Password" bind:value="{password}" required />
+        <input class="signup right-half" type="password" placeholder="Retype Password" bind:value="{retyped_password}" required />
 
         
         <button class="btn btn-primary" type="submit" on:click="{adminUser}">Sign Up</button>
@@ -88,11 +88,16 @@
     #signUp {
         margin: 0 auto;
         width:500px;
+        padding:10px;
     }
 
-    .form-control {
+    .signup {
         margin-bottom:20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border:none;
+        outline: none;
+        border-radius: 0.2rem;
+        background-color: #eee;
+        width:100%;
     }
 
     .left-half {

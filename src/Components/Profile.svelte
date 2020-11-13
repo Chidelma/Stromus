@@ -6,12 +6,15 @@
 
     $server.on('recv-invite', _invite => {
 
-        admin.update(admin => {
-            admin.add_invite(_invite);
-            return admin;
-        });
+        if(_invite.email == $admin.get_email()) {
 
-        invites = $admin.get_invites();
+            admin.update(admin => {
+                admin.add_invite(_invite);
+                return admin;
+            });
+
+            invites = $admin.get_invites();
+        }
     });
 </script>
 

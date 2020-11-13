@@ -46,15 +46,15 @@
 
 <hr/>
 
-<input class="form-control event-title" placeholder="Event Title" bind:value="{new_event.title}" required/>
+<input class="event-form event-title" placeholder="Event Title" bind:value="{new_event.title}" required/>
 
-<input type="date" class="form-control event-date" bind:value="{date}" min={getTodayDate()} required/>
+<input type="date" class="event-form event-date" bind:value="{date}" min={getTodayDate()} required/>
 
-<input type="time" class="form-control event-time" bind:value="{time}" required/>
+<input type="time" class="event-form event-time" bind:value="{time}" required/>
 
-<input class="form-control event-loc" bind:value="{new_event.location}" placeholder="Location" required/>
+<input class="event-form event-loc" bind:value="{new_event.location}" placeholder="Location" required/>
 
-<textarea class="form-control event-desc" bind:value="{new_event.desc}" rows="4" placeholder="Description" required></textarea>
+<textarea class="event-form event-desc" bind:value="{new_event.desc}" rows="4" placeholder="Description" required></textarea>
 
 <button class="btn btn-danger" on:click="{() => (eventForm.set(false))}">Cancel</button>
 <button class="btn btn-primary" on:click="{addEvent}" disabled="{new_event.title.length == 0}">
@@ -81,9 +81,13 @@
         width:48%
     }
 
-    .form-control {
+    .event-form {
         margin-bottom: 20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        width:100%;
+        background-color: #eee;
+        outline: none;
+        border: none;
+        border-radius: 0.2rem;
     }
 
     .btn-danger {

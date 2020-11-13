@@ -5,15 +5,15 @@ export default class Cognito {
 
     private auth:any;
 
-    constructor() {
+    constructor(env:any) {
 
         Amplify.configure({
             Auth : {
-                identityPoolId: 'us-east-1:1f1d6548-193d-496e-acc6-8d5dc3a09ebc',
-                region: 'ca-central-1',
-                identityPoolRegion: 'ca-central-1',
-                userPoolId: 'ca-central-1_UZxAd5Yq0',
-                userPoolWebClientId: '3hecekg27o2b50rp4bdfb9q9gg'
+                identityPoolId: env.IDENTITY_POOL_ID,
+                region: env.REGION,
+                identityPoolRegion: env.REGION,
+                userPoolId: env.USER_POOL_ID,
+                userPoolWebClientId: env.USER_POOL_WEB_CLIENT_ID
             }
         });
 

@@ -1,6 +1,6 @@
 <script lang="ts">
     import type Organ from '../../Scripts/Organ';
-    import Event from '../../Scripts/Event';
+    import type Event from '../../Scripts/Event';
     import type { _user, _role, _event, _part_sort } from '../../Scripts/Interface';
     import { eventForm, server } from '../../Scripts/Init';
     import type User from '../../Scripts/User';
@@ -13,12 +13,6 @@
 
     let events:Event[] = organ.get_events();
     let can_add_event:boolean = user.get_role().can_add_event();
-
-    $server.on('recv-event', _event => {
-        organ.add_event(new Event(_event));
-        events = organ.get_events();
-        eventForm.set(false);
-    });
 </script>
 
 {#if $eventForm}

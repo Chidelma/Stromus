@@ -41,7 +41,7 @@
 
 <hr/>
 
-<textarea id="post-text" class="form-control" rows="5" bind:value="{new_post.msg}" required></textarea>
+<textarea id="post-text" class="post-form" rows="5" bind:value="{new_post.msg}" placeholder="{organ.get_name()} Post" required></textarea>
 
 <button class="btn btn-danger" on:click="{() => (postForm.set(false))}">Cancel</button>
 <button class="btn btn-primary" on:click="{addPost}" disabled="{new_post.msg.length == 0}">
@@ -55,9 +55,11 @@
 
 <style>
     #post-text {
-        width:100%;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        background-color: #eee;
+        width: 100%;
+        outline: none;
+        border:none;
+        border-radius:0.2rem;
     }
 
     .btn-danger {

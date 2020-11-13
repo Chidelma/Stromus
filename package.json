@@ -27,7 +27,6 @@
   "dependencies": {
     "amazon-cognito-identity-js": "^4.5.0",
     "aws-amplify": "latest",
-    "dotenv": "^8.2.0",
     "dynamite": "^0.10.1",
     "electron": "^10.1.5",
     "moment": "^2.29.1",

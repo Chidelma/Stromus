@@ -12,7 +12,8 @@
 
     $server.emit('go-online', {
         user_id: user.get_id(),
-        organ_id: organ.get_id()
+        organ_id: organ.get_id(),
+        admin_id: $admin.get_id()
     });
 
     let users:User[] = organ.get_users();
@@ -20,19 +21,15 @@
 
     let view_user:User;
 
-    let can_add_user:boolean = false;
+    let can_add_user:boolean = user.get_role().can_add_user();
     let search_user:string = '';
 
-    $server.on('recv-invite', _pend => {
-        organ.add_pend(_pend);
-        pends = organ.get_pends();
-    });
+    $server.on('online', (data) => {
 
-    $server.on('online', (user_id) => {
-
-        $online.add(user_id);
-
-        online.set($online);
+        if(data.organ_id == organ.get_id()) {
+            $online.add(data.user_id);
+            online.set($online);
+        }
 
         $server.emit('go-online', {
             user_id: user.get_id(),
@@ -41,11 +38,12 @@
         });
     });
 
-    $server.on('offline', (user_id) => {
+    $server.on('offline', (data) => {
 
-        $online.delete(user_id);
-
-        online.set($online);
+        if(data.organ_id == organ.get_id()) {
+            $online.delete(data.user_id);
+            online.set($online);
+        }
 
         $server.emit('go-online', {
             user_id: user.get_id(),
@@ -94,7 +92,7 @@
 </table>
 
 <hr/>
-<input class="form-control" placeholder="Search User" bind:value="{search_user}" on:keyup="{find_user}"/>
+<input class="user-search" placeholder="Search User" bind:value="{search_user}" on:keyup="{find_user}"/>
 <hr/>
 
 <div class="user-scroll">
@@ -108,15 +106,17 @@
         </button>
         <hr/>
     {/each}
-
-    <h5>Pending</h5>
-    <hr/>
-    {#each pends as pend}
-        <button class="btn btn-light user btn-sm">
-            {pend.email}
-        </button>
+    
+    {#if pends.length > 0}
+        <h5>Pending</h5>
         <hr/>
-    {/each}
+        {#each pends as pend}
+            <button class="btn btn-light user btn-sm">
+                {pend.email}
+            </button>
+            <hr/>
+        {/each}
+    {/if}
 </div>
 
 
@@ -139,16 +139,19 @@
         color:green;
     }
 
-    .form-control {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    .user-search {
         width: 100%;
+        background-color: #eee;
+        outline: none;
+        border: none;
+        border-radius:0.2rem;
     }
 
     .heading {
         width:100%;
     }
 
-    .btn-sm {
+    .btn-primary {
         float:right;
     }
 

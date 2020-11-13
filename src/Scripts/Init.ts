@@ -1,20 +1,21 @@
 import { writable } from 'svelte/store';
 import type { _tab, _chatbox } from './Interface';
 const io = require('socket.io-client');
+import { env } from './env';
 
 import Admin from './Admin';
 import Cognito from './Cognito';
 import Dynamo from './Dynamodb';
 import Store from './Storage';
 
-export const server = writable(io('http://localhost:4000', {transports: ['websocket'], upgrade: false}));
+export const server = writable(io('http://localhost:4000/', {transports: ['websocket'], upgrade: false}));
 
 export const $admin = new Admin();
 export const admin = writable($admin);
-export const cognito = writable(new Cognito());
+export const cognito = writable(new Cognito(env));
 export const $dynamo = new Dynamo();
 export const dynamo = writable($dynamo);
-export const s3 = writable(new Store());
+export const s3 = writable(new Store(env));
 export const isAuth = writable(false);
 
 export const organForm = writable(false);

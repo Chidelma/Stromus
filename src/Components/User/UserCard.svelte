@@ -133,14 +133,21 @@
 
 <hr/>
 
-{#each posts as post}
-    <PostCard {post} user={view_user} />
-    <hr/>
-{/each}
+<div id="scroll">
+    {#each posts as post}
+        <PostCard {post} user={view_user} />
+        <hr/>
+    {/each}
+</div>
 
 <style>
     h4 {
         margin-top:50px;
+    }
+
+    #scroll {
+        max-height: 500px;
+        overflow-y: auto;
     }
 
     .btn-primary {
