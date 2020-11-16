@@ -1,41 +1,101 @@
 <script lang="ts">
-    import { activeTabValue, server, postForm, eventForm } from '../Scripts/Init';
-    import type { _tab } from '../Scripts/Interface';
+    import { activeTabValue, server, postForm, eventForm, userCard } from '../Scripts/Init';
+    import type { _tab, _post, _event, _pending, _part_sort, _role } from '../Scripts/Interface';
     import Post from '../Scripts/Post';
     import Event from '../Scripts/Event';
+    import Role from '../Scripts/Role';
 
     export let tabs:_tab[] = [];
 
     let lastTabValue:number = 1;
 
-    $server.on('recv-post', _post => {
-        for(let i = 1; i < tabs.length; i++) {
-            if(tabs[i].organ.get_id() == _post.organ_id) {
-                let new_post:Post = new Post(_post);
-                new_post.setup_comments();
-                tabs[i].organ.add_post(new_post);
-                postForm.set(false);
-                break;
-            }
+    $server.on('recv-post', (post:_post) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == post.organ_id);
+
+        if(idx > 0) {
+            let new_post:Post = new Post(post);
+            new_post.setup_comments();
+            tabs[idx].organ.add_post(new_post);
+            postForm.set(false);
         }
     });
 
-    $server.on('recv-event', _event => {
-        for(let i = 1; i < tabs.length; i++) {
-            if(tabs[i].organ.get_id() == _event.organ_id) {
-                tabs[i].organ.add_event(new Event(_event));
-                eventForm.set(false);
-                break;
-            }
+    $server.on('recv-event', (event:_event) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == event.organ_id);
+
+        if(idx > 0) {
+            tabs[idx].organ.add_event(new Event(event));
+            eventForm.set(false);
         }
     });
 
-    $server.on('recv-invite', _pend => {
-        for(let i = 1; i < tabs.length; i++) {
-            if(tabs[i].organ.get_id() == _pend.organ_id) {
-                tabs[i].organ.add_pend(_pend);
-                break;
-            }
+    $server.on('recv-invite', (pend:_pending) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == pend.organ_id);
+
+        if(idx > 0)
+            tabs[idx].organ.add_pend(pend);
+    });
+
+    $server.on('rm-post', (data:_part_sort) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == data.part_value);
+
+        if(idx > 0)
+            tabs[idx].organ.remove_post(data.sort_value);
+    });
+
+    $server.on('rm-event', (data:_part_sort) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == data.part_value);
+
+        if(idx > 0)
+            tabs[idx].organ.remove_event(data.sort_value);
+    });
+
+    $server.on('rm-user', (data:_part_sort) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == data.part_value);
+
+        if(idx > 0)
+            tabs[idx].organ.remove_user(data.sort_value);
+    });
+
+    $server.on('new-post', (new_post:_post) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == new_post.organ_id);
+        
+        if(idx > 0) {
+            let post_idx:number = tabs[idx].organ.get_posts().findIndex(post => post.get_id() == new_post.id);
+
+            if(post_idx > -1)
+                tabs[idx].organ.get_posts()[post_idx].set_msg(new_post.msg);
+        }
+    });
+
+    $server.on('new-event', (new_event:_event) => {
+
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == new_event.organ_id);
+
+        if(idx > 0) {
+            let evt_idx:number = tabs[idx].organ.get_events().findIndex(event => event.get_id() == new_event.id);
+
+            if(evt_idx > -1)
+                tabs[idx].organ.get_events()[evt_idx].set_event(new_event);
+        }
+    });
+
+    $server.emit('new-role', (new_role:_role) => {
+        
+        let idx:number = tabs.findIndex(tab => tab.organ != undefined && tab.organ.get_id() == new_role.organ_id);
+
+        if(idx > 0) {
+            let usr_idx:number = tabs[idx].organ.get_users().findIndex(user => user.get_id() == new_role.user_id);
+
+            if(usr_idx > -1)
+                tabs[idx].organ.get_users()[usr_idx].set_role(new Role(new_role));
         }
     });
 
@@ -92,7 +152,6 @@
     .box {
         margin-bottom: 10px;
         padding: 20px;
-        border-top-color:#dee2e6;
         border-radius: 0 0 .5rem .5rem;
         border-top: 0;
         height:100%;
@@ -104,7 +163,7 @@
         padding-left: 0;
         margin-bottom: 0;
         list-style: none;
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid #350d22;
     }
 
     li {
@@ -118,15 +177,15 @@
         display: block;
         padding: 0.5rem 1rem;
         cursor: pointer;
+        color:#350d22;
     }
   
     span:hover {
-        border-color: #e9ecef #e9ecef #dee2e6;
+        border-color: #350d22;
     }
   
     li.active > span {
-        color: #495057;
-        background-color: #fff;
-        border-color: #dee2e6 #dee2e6 #fff;
+        color: #fff;
+        background-color: #350d22;
     }
 </style>

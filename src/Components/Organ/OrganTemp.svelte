@@ -29,7 +29,7 @@
         width:40%;
         float:left;
         padding-right:20px;
-        border-right: 1px solid #dee2e6;
+        border-right: 1px solid #350d22;
         padding-bottom: 20px;
         height: 85%;
     }
@@ -37,7 +37,8 @@
     #events {
         width:35%;
         float:left;
-        border-right: 1px solid #dee2e6;
+        border-right: 1px solid #350d22;
+        border-left: 1px solid #350d22;
         padding-left: 20px;
         padding-right: 20px;
         padding-bottom: 20px;
@@ -50,5 +51,6 @@
         padding-left: 20px;
         padding-bottom: 20px;
         height: 85%;
+        border-left: 1px solid #350d22;
     }
 </style>

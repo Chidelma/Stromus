@@ -1,162 +1,260 @@
 <script lang="ts">
     import type User from '../../Scripts/User';
     import type Organ from '../../Scripts/Organ';
-    import Message from '../../Scripts/Message';
+    import Role from '../../Scripts/Role';
     import PostCard from '../Post/PostCard.svelte';
-    import { userCard, dynamo, chatboxes, activeChatBox } from '../../Scripts/Init';
+    import { userCard, server } from '../../Scripts/Init';
     import type Post from '../../Scripts/Post';
-    import { v5 as uuidv5 } from 'uuid';
-    import type { _chat, _msg, _part_sort, _chatbox } from '../../Scripts/Interface';
+    import type { _chat, _msg, _part_sort, _chatbox, _role } from '../../Scripts/Interface';
 
     export let view_user:User;
     export let user:User;
     export let organ:Organ;
 
+    let user_role:Role = view_user.get_role();
+
+    let edit_role:_role = {
+        add_post: user_role.can_add_post(),
+        edit_post: user_role.can_edit_post(),
+        delete_post: user_role.can_delete_post(),
+
+        add_event: user_role.can_add_event(),
+        edit_event: user_role.can_edit_event(),
+        delete_event: user_role.can_delete_event(),
+
+        add_user: user_role.can_add_user(),
+        edit_user: user_role.can_edit_user(),
+        delete_user: user_role.can_delete_user(),
+
+        organ_id: user_role.get_organ_id(),
+        user_id: user_role.get_user_id()
+    }
+
     let posts:Post[] = view_user.get_posts();
-    let chat_id:string = uuidv5(sort_id(), organ.get_id());
 
-    function sort_id(): string {
-        let joined_id:string = user.get_id() + view_user.get_id();
-        return joined_id.split('').sort().join('');
-    }
+    let editing:boolean = false;
 
-    function resizeChats() {
-
-        let chatBoxSize:number = 320;
-        let totalSize:number = chatBoxSize * $chatboxes.length;
-
-        if((totalSize + chatBoxSize) >= window.innerWidth) {
-
-            let deleted_chat:_chatbox[] = [];
-
-            chatboxes.update(arr => {
-                deleted_chat = arr.splice(1, 1);
-                return arr;
-            });
-
-            activeChatBox.update(arr => {
-                arr.splice(arr.indexOf(deleted_chat[1].value), 1);
-                return arr;
-            });
+    $server.emit('new-role', (new_role:_role) => {
+        if(new_role.user_id == edit_role.user_id) {
+            view_user.set_role(new Role(new_role));
+            editing = false;
         }
+    });
+
+    function formatName(user:User):string {
+
+        let first_inital:string = user.get_first_name()[0];
+        let rem_first_name:string = user.get_first_name().substring(1, user.get_first_name().length).toLowerCase();
+        let last_initial:string = user.get_last_name()[0];
+
+        return first_inital+rem_first_name + ' ' + last_initial + '.';
     }
 
-    function chatBoxExist():boolean {
+    function deleteUser() {
 
-        let found:boolean = false;
+        let sure:boolean = confirm('Are you sure you want to delete user?');
 
-        if($chatboxes.length > 1) {
+        if(sure) {
 
-            let box:_chatbox = $chatboxes.find(box => box.user_two.get_id() == view_user.get_id());
-
-            if(box != undefined) {
-
-                activeChatBox.update(arr => {
-                    arr.push(box.value);
-                    return arr;
-                });
-
-                found = true;
-            }
-        }
-
-        return found;
-    }
-
-    async function viewChat() {
-
-        if(!chatBoxExist()) {
-
-            let messages:Message[] = [];
-
-            let chat:_chat = organ.find_chat(chat_id);
-        
-            if(chat == undefined) {
-
-                chat = {
-                    organ_id: organ.get_id(),
-                    chat_id: chat_id
-                }
-
-                let added:boolean = await $dynamo.putItem("CHATS", chat);
-
-                if(added)
-                    organ.setup_chats();
-
-            } else {
-
-                let key_value:_part_sort = {
-                    part_key: 'chat_id',
-                    part_value: chat.chat_id
-                }
-
-                let msgs:_msg[] = await $dynamo.queryItem('MESSAGES', key_value);
-
-                msgs = msgs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-                for(let i = 0; i < msgs.length; i++)
-                    messages.push(new Message(msgs[i]));
+            let key_value:_part_sort = {
+                part_key: 'organ_id',
+                part_value: organ.get_id(),
+                sort_key: 'id',
+                sort_value: view_user.get_id()
             }
 
-            resizeChats();
-
-            activeChatBox.update(arr => {
-                arr.push($chatboxes.length + 1);
-                return arr;
-            });
-
-            chatboxes.update(chats => {
-
-                let new_chat:_chatbox = {
-                    name: view_user.get_first_name().toLowerCase() + ' ' + view_user.get_last_name().toLowerCase(),
-                    messages: messages,
-                    value: chats.length + 1,
-                    chat_id: chat.chat_id,
-                    user_one: user,
-                    user_two: view_user
-                }
-
-                chats.push(new_chat);
-                return chats;
-            });
+            $server.emit('delete-user', key_value);
         }
+    }
+
+    function editUser() {
+        $server.emit('edit-role', edit_role);
     }
 </script>
 
-<button class="btn btn-danger" on:click="{() => (userCard.set(false))}"><i class="fa fa-close"></i></button>
+<button class="btn btn-danger btn-sm" on:click="{() => (userCard.set(false))}"><i class="fa fa-close"></i></button>
 
-{#if view_user.get_id() == user.get_id()}
-    <button class="btn btn-primary" on:click="{viewChat}">Chat</button>
+{#if !editing}
+    <h4>{formatName(view_user)}'s posts</h4>
+{:else}
+    <h4>Role</h4>
 {/if}
 
-<h4>{view_user.get_first_name().toLowerCase()} {view_user.get_last_name().toLowerCase()}'s posts</h4>
+{#if !editing}
+    <div id="scroll">
+        {#each posts as post}
+            <PostCard {post} user={view_user} />
+            <hr/>
+        {/each}
+    </div>
+{:else}
+    <table>
+        <tr>
+            <th class="policy">
+                Policy
+            </th>
+            <th>
+                True
+            </th>
+            <th>
+                False
+            </th>
+        </tr>
+        <tr>
+            <td class="policy">
+                Add Post
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.add_post === true} on:change="{() => (edit_role.add_post = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.add_post === false} on:change="{() => (edit_role.add_post = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Edit Post
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.edit_post === true} on:change="{() => (edit_role.edit_post = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.edit_post === false} on:change="{() => (edit_role.edit_post = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Delete Post
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.delete_post === true} on:change="{() => (edit_role.delete_post = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.delete_post === false} on:change="{() => (edit_role.delete_post = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Add User
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.add_user === true} on:change="{() => (edit_role.add_user = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.add_user === false} on:change="{() => (edit_role.add_user = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Edit User
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.edit_user === true} on:change="{() => (edit_role.edit_user = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.edit_user === false} on:change="{() => (edit_role.edit_user = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Delete User
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.delete_user === true} on:change="{() => (edit_role.delete_user = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.delete_user === false} on:change="{() => (edit_role.delete_user = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Add Event
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.add_event === true} on:change="{() => (edit_role.add_event = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.add_event === false} on:change="{() => (edit_role.add_event = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Edit Event
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.edit_event === true} on:change="{() => (edit_role.edit_event = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.edit_event === false} on:change="{() => (edit_role.edit_event = false)}" />
+            </td>
+        </tr>
+        <tr>
+            <td class="policy">
+                Delete Event
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.delete_event === true} on:change="{() => (edit_role.delete_event = true)}" />
+            </td>
+            <td>
+                <input type="radio" checked={edit_role.delete_event === false} on:change="{() => (edit_role.delete_event = false)}" />
+            </td>
+        </tr>
+    </table>
+{/if}
 
-<hr/>
+{#if !editing}
+    {#if user.get_id() != view_user.get_id()}
+        {#if user.get_role().can_delete_user()}
+            <button class="btn btn-sm del-btn" on:click="{deleteUser}">Delete User</button>
+        {/if}
 
-<div id="scroll">
-    {#each posts as post}
-        <PostCard {post} user={view_user} />
-        <hr/>
-    {/each}
-</div>
+        {#if user.get_role().can_edit_user()}
+            <button class="btn btn-sm edt-btn" on:click="{() => (editing = true)}">Edit Role</button>
+        {/if}
+    {/if}
+{:else}
+    <button class="btn btn-sm del-btn" on:click="{editUser}">Change</button>
+    <button class="btn btn-sm edt-btn" on:click="{() => (editing = false)}">Cancel</button>
+{/if}
 
 <style>
     h4 {
-        margin-top:50px;
+        float:left;
+    }
+
+    table {
+        width:100%;
+        text-align: center;
     }
 
     #scroll {
+        margin-top:50px;
         max-height: 500px;
         overflow-y: auto;
+        width: 100%;
     }
 
-    .btn-primary {
-        float: left;
-        
+    .policy {
+        text-align: left;
     }
 
     .btn-danger {
         float:right;
         border-radius: 50%;
+    }
+
+    .del-btn, .edt-btn {
+        margin-top:10px;
+        float: right;
+        background-color: transparent;
+        color:#350d22;
+        border-color: #350d22;
+        box-shadow:unset;
+        margin-left:10px;
+    }
+
+    .del-btn:hover, .edt-btn:hover {
+        color:white;
+        background-color: #350d22;
     }
 </style>

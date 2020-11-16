@@ -9,6 +9,22 @@
     function get_time_span(date:string): string {
         return moment(date, 'YYYY-MM-DD[T]HH:mm:ss').fromNow();
     }
+
+    function formatName(name:string):string {
+
+        let names:string[] = name.split(' ');
+
+        if(names.length > 1) {
+
+            let first_inital:string = names[0][0];
+            let rem_first_name:string = names[0].substring(1, names[0].length);
+            let last_initial:string = names[1][0];
+
+            return first_inital+rem_first_name.toLowerCase() + ' ' + last_initial + '.';
+        } else {
+            return name;
+        }
+    }
 </script>
 
 {#each messages as message, i}
@@ -23,7 +39,7 @@
         </article>
     {:else}
         <article>   
-            <span class="name">{message.get_name().toLowerCase()}</span>
+            <span class="name">{formatName(message.get_name())}</span>
             <span class="date">{get_time_span(message.get_date())}</span>
             <img src="{message.get_photo()}" alt="profile"/>
             {#if message.get_user_id() == user.get_id()}

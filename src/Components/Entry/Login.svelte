@@ -58,7 +58,7 @@
         <input class="login-form" placeholder="Email" bind:value="{email}" required />
         <input class="login-form" type="password" placeholder="Password" bind:value="{password}" on:keydown="{e => e.key === 'ENter' && login()}" required />
 
-        <button class="btn btn-primary" type="submit" on:click="{login}" disabled="{loading}">
+        <button class="btn btn-info" type="submit" on:click="{login}" disabled="{loading}">
             {#if !loading}
                 Login
             {:else}
@@ -78,7 +78,8 @@
 
     .login-form {
         margin-bottom:20px;
-        background-color: #eee;
+        background-color: #350d22;
+        color:white;
         width:100%;
         outline: none;
         border: none;

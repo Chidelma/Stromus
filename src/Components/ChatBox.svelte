@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { _chatbox, _msg } from '../Scripts/Interface';
-    import { activeChatBox, dynamo, chatboxes, server } from '../Scripts/Init';
+    import { activeChatBox, chatboxes, server } from '../Scripts/Init';
     import Message from '../Scripts/Message';
     import Messages from './Message.svelte';
     import { createEventDispatcher } from 'svelte';
@@ -17,10 +17,10 @@
 
     $server.emit('join-chat', box.chat_id);
 
-    $server.on('recv-msg', async (data) => {
-        if(data.chat_id == box.chat_id) {
+    $server.on('recv-msg', async (msg:_msg) => {
+        if(msg.chat_id == box.chat_id) {
             user_msg = '';
-            box.messages.push(new Message(data));
+            box.messages.push(new Message(msg));
             div.scrollTo(0, div.scrollHeight);
             refresh();
         }
@@ -121,13 +121,29 @@
             $server.emit('send-msg', new_message);
         }
     }
+
+    function formatName(name:string):string {
+
+        let names:string[] = name.split(' ');
+
+        if(names.length > 1) {
+
+            let first_inital:string = names[0][0].toUpperCase();
+            let rem_first_name:string = names[0].substring(1, names[0].length);
+            let last_initial:string = names[1][0].toUpperCase();
+
+            return first_inital+rem_first_name + ' ' + last_initial + '.';
+        } else {
+            return name;
+        }
+    }
 </script>
 
 {#if isActive(box.value)}
     <div class="box">
         <div class="user">
             <span>
-                {box.name}
+                {formatName(box.name)}
                 {#if box.value > 1}
                     <i class="fa fa-close" on:click="{closeTab}"></i>
                 {/if}
@@ -137,15 +153,21 @@
         <div id="scrollable" bind:this={div}>
             <Messages messages={box.messages} user={box.user_one} />
         </div>
-        <div class="msg">
-            <input class="msg-box" placeholder="Message {box.name}" bind:value="{user_msg}" on:keydown="{e => e.key === 'Enter' && sendMsg()}"/>
+        <div class="input-group msg">
+            <div class="input-group-prepend">
+                <button class="btn" type="file"><i class="fa fa-paperclip"></i></button>
+            </div>
+            <input class="msg-box" placeholder="Message {formatName(box.name)}" bind:value="{user_msg}" on:keydown="{e => e.key === 'Enter' && sendMsg()}"/>
+            <div class="input-group-append">
+                <button class="btn" on:click="{sendMsg}"><i class="fa fa-send"></i></button>
+            </div>
         </div>
     </div>
 {:else}
     <div class="minz" on:click="{makeActive}">
         <div class="user">
             <span>
-                {box.name}
+                {formatName(box.name)}
                 {#if box.value > 1}
                     <i class="fa fa-close"></i>
                 {/if}
@@ -158,7 +180,6 @@
     .minz {
         width:300px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        background-color: #fff;
         float: right;
         margin-left: 20px;
         margin-top:56%;
@@ -168,23 +189,33 @@
         width:300px;
         height:400px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        background-color: #fff;
         float: right;
         margin-left: 20px;
+        outline:none;
+        border:none;
+        background-color: #fff;
     }
 
     .user {
         width: 100%;
-        background-color: #303030;
-        color: #fff;
         height:10%;
+        background-color: #350d22;
+        color:white;
     }
 
     .msg-box {
-        width:100%;
-        background-color: #eee;
         outline: none;
         border: none;
+        background-color: #350d22;
+        color:white;
+        width:70.4%;
+    }
+
+    .btn, .btn:hover {
+        background-color: #350d22;
+        color:white;
+        box-shadow: unset;
+        border-radius: 0px;
     }
 
     i {

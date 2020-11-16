@@ -185,15 +185,6 @@ export default class Organ {
         this.posts = posts;
     }
 
-    change_post(post:Post) {
-        for(let i = 0; i < this.posts.length; i++) {
-            if(post.get_id() == this.posts[i].get_id()) {
-                this.posts[i] = post;
-                break;
-            }
-        }
-    }
-
     sort_all() {
         this.posts = this.posts.sort((a, b) => new Date(b.get_date()).getTime() - new Date(a.get_date()).getTime());
     }
@@ -246,13 +237,21 @@ export default class Organ {
         this.users.push(user);
     }
 
+    remove_user(user_id:string) {
+        this.users.splice(this.users.findIndex(user => user.get_id() == user_id), 1);
+    }
+
     get_events():Event[] {
         return this.events;
     }
 
     add_event(event:Event) {
         this.events.unshift(event);
-        this.events = this.events.sort((a, b) => new Date(b.get_date_time()).getTime() - new Date(a.get_date_time()).getTime());
+        this.events = this.events.sort((a, b) => new Date(a.get_date_time()).getTime() - new Date(b.get_date_time()).getTime());
+    }
+
+    remove_event(event_id:string) {
+        this.events.splice(this.events.findIndex(event => event.get_id() == event_id), 1);
     }
 
     get_posts():Post[] {
@@ -261,6 +260,10 @@ export default class Organ {
 
     add_post(post:Post) {
         this.posts.unshift(post);
+    }
+
+    remove_post(post_id:string) {
+        this.posts.splice(this.posts.findIndex(post => post.get_id() == post_id), 1);
     }
 
     get_user():User {

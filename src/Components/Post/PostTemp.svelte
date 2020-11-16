@@ -3,7 +3,7 @@
     import type User from '../../Scripts/User';
     import type { _post, _part_sort } from '../../Scripts/Interface';
     import { postForm, comForm, server } from '../../Scripts/Init';
-    import Post from '../../Scripts/Post';
+    import type Post from '../../Scripts/Post';
     import PostCard from './PostCard.svelte';
     import Blur from '../BlurScreen.svelte';
     import Form from './PostForm.svelte';
@@ -17,23 +17,20 @@
 
     let show_post:Post;
 
-    $server.on('recv-post', _post => {
+    $server.on('recv-post', (post:_post) => {
+        if(post.organ_id == organ.get_id()) {
+            posts = organ.get_posts();
+        }
+    });
 
-        let new_post:Post = new Post(_post);
-        new_post.setup_comments();
-        organ.add_post(new_post);
-        posts = organ.get_posts();
-        postForm.set(false);
-        
+    $server.on('rm-post', (data:_part_sort) => {
+        if(data.part_value == organ.get_id()) 
+            posts = organ.get_posts();;
     });
 
     function showComments(event:any) :void {
         show_post = event.detail.post;
         comForm.set(true);
-    }
-
-    function updatePost(event:any) :void {
-        organ.change_post(event.detail.post);
     }
 </script>
 
@@ -47,7 +44,7 @@
 {#if $comForm}
     <Blur/>
     <div id="com-form">
-        <Temp post={show_post} {user} on:message={updatePost} />
+        <Temp post={show_post} {user} />
     </div>
 {/if}
 
@@ -58,7 +55,7 @@
         </td>
         <td>
             {#if can_add_post}
-                <button class="btn btn-sm btn-primary" on:click="{() => (postForm.set(true))}">Add Post</button>
+                <button class="btn btn-sm btn-info" on:click="{() => (postForm.set(true))}">Add Post</button>
             {/if}
         </td>
     </tr>
@@ -78,6 +75,10 @@
 {/if}
 
 <style>
+    h5 {
+        color:#350d22;
+    }
+
     #post-form {
         padding:20px;
         position:fixed;
@@ -89,6 +90,8 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 0.4rem;
         transform: translate(-50%, 0);
+        background-color: slateblue;
+        color:#350d22;
     }
 
     #com-form {
@@ -102,7 +105,9 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 0.4rem;
         transform: translate(-50%, 0);
-        max-height: 90%;
+        max-height: 600px;
+        background-color: slateblue;
+        color:#350d22;
     }
 
     #no-posts {
@@ -113,6 +118,7 @@
         width:100%;
         height:100%;
         overflow-y: auto;
+        color: white;
     }
 
     .heading {

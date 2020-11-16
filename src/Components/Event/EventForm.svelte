@@ -44,7 +44,7 @@
 
 <h3>New Event</h3>
 
-<hr/>
+<button class="btn btn-danger btn-sm" on:click="{() => (eventForm.set(false))}"><i class="fa fa-close"></i></button>
 
 <input class="event-form event-title" placeholder="Event Title" bind:value="{new_event.title}" required/>
 
@@ -56,8 +56,7 @@
 
 <textarea class="event-form event-desc" bind:value="{new_event.desc}" rows="4" placeholder="Description" required></textarea>
 
-<button class="btn btn-danger" on:click="{() => (eventForm.set(false))}">Cancel</button>
-<button class="btn btn-primary" on:click="{addEvent}" disabled="{new_event.title.length == 0}">
+<button class="btn btn-event" on:click="{addEvent}" disabled="{new_event.title.length == 0}">
     {#if !loading}
         Add Event
     {:else}
@@ -66,8 +65,13 @@
 </button>
 
 <style>
+    h3 {
+        float:left;
+    }
+
     .event-title {
         width:100%;
+        margin-top:20px;
         margin-bottom: 20px;
     }
 
@@ -88,13 +92,25 @@
         outline: none;
         border: none;
         border-radius: 0.2rem;
+        background-color: #350d22;
+        color:white;
     }
 
     .btn-danger {
-        float:left;
+        float:right;
+        border-radius: 50%;
     }
 
-    .btn-primary {
+    .btn-event {
         float:right;
+        background-color: transparent;
+        border-color: #350d22;
+        color:#350d22;
+        box-shadow: unset;
+    }
+
+    .btn-event:hover {
+        color:white;
+        background-color: #350d22;
     }
 </style>

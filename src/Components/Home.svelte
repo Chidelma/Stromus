@@ -51,7 +51,7 @@
             <h5>My Organisations</h5>
         </td>
         <td id="add-organ">
-            <button class="btn btn-sm btn-primary" on:click="{() => (organForm.set(true))}">Add Organization</button>
+            <button class="btn btn-sm btn-info" on:click="{() => (organForm.set(true))}">Add Organization</button>
         </td>
     </tr>
 </table>
@@ -64,7 +64,7 @@
     <p id="msg">You Don't Have Any Organisations</p>
 {:else}
     {#each organs as organ}
-        <button class="btn btn-light" on:click="{() => viewOrgan(organ)}">
+        <button class="btn purple btn-info" on:click="{() => viewOrgan(organ)}">
             {organ.get_name()}
         </button>
     {/each}
@@ -87,17 +87,18 @@
     .search-bar {
         margin-bottom: 20px;
         width:100%;
-        background-color: #eee;
         border-radius: 0.2rem;
         outline: none;
         border: none;
+        background-color: #350d22;
+        color:white;
     }
 
     #heading {
         width: 100%;
     }
 
-    .btn-light {
+    .purple {
         width:200px;
         height:200px;
         float:left;

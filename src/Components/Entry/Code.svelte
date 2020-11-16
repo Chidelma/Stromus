@@ -37,14 +37,17 @@
     }
 </script>
 
-<input class="form-control" placeholder="Verification Code" bind:value="{code}" required/>
+<input class="code" placeholder="Verification Code" bind:value="{code}" required/>
 
-<button class="btn btn-primary" on:click="{resend}">Resend</button>
+<button class="btn btn-info" on:click="{resend}">Resend</button>
 <button class="btn btn-success" on:click="{confirm}">Confirm</button>
 
 <style>
-    .form-control {
+    .code {
         margin-bottom:20px;
+        background-color: #350d22;
+        color:white;
+        width:100%;
     }
 
     .btn {
@@ -52,7 +55,7 @@
         margin-bottom:20px;
     }
 
-    .btn-primary {
+    .btn-info {
         float:left;
     }
 

@@ -66,8 +66,7 @@
 </script>
 
 <h3>New User</h3>
-
-<hr/>
+<button class="btn btn-danger btn-sm" on:click="{() => (userForm.set(false))}"><i class="fa fa-close"></i></button>
 
 <input class="user-form" placeholder="Email" bind:value="{new_invite.email}" required/>
 
@@ -187,8 +186,7 @@
     </tr>
 </table>
 
-<button class="btn btn-danger" on:click="{() => (userForm.set(false))}">Cancel</button>
-<button class="btn btn-primary" on:click="{addUser}" disabled="{new_invite.email.length == 0}">
+<button class="btn btn-user" on:click="{addUser}" disabled="{new_invite.email.length == 0}">
     {#if !loading}
         Invite User
     {:else}
@@ -197,21 +195,37 @@
 </button>
 
 <style>
+    h3 {
+        float:left;
+    }
+    
     .user-form {
         width:100%;
-        background-color: #eee;
+        background-color: #350d22;
         border: none;
         outline:none;
         border-radius: 0.2rem;
         margin-bottom: 20px;
+        color:white;
+        margin-top:20px;
     }
 
     .btn-danger {
-        float:left;
+        float:right;
+        border-radius: 50%;
     }
 
-    .btn-primary {
+    .btn-user {
         float:right;
+        background-color: transparent;
+        border-color: #350d22;
+        color:#350d22;
+        box-shadow: unset;
+    }
+
+    .btn-user:hover {
+        background-color: #350d22;
+        color:white;
     }
 
     h5 {

@@ -25,6 +25,13 @@ export default class Event {
         return this.id;
     }
 
+    set_event(new_event:_event) {
+        this.title = new_event.title.toUpperCase();
+        this.date_time = new_event.date_time;
+        this.desc = new_event.desc;
+        this.location = new_event.location;
+    }
+
     get_organ_id():string {
         return this.organ_id;
     }

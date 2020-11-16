@@ -42,7 +42,7 @@
 
                 new_user.photo = 'https://api.hello-avatar.com/adorables/' + new_user.id;
 
-                $admin.set_admin(new_user);
+                await $admin.set_admin(new_user);
 
                 let added:boolean = await $cognito.signUp(password, $admin);
 
@@ -75,7 +75,7 @@
         <input class="signup right-half" type="password" placeholder="Retype Password" bind:value="{retyped_password}" required />
 
         
-        <button class="btn btn-primary" type="submit" on:click="{adminUser}">Sign Up</button>
+        <button class="btn btn-info" type="submit" on:click="{adminUser}">Sign Up</button>
     {/if}
 </div>
 
@@ -96,7 +96,8 @@
         border:none;
         outline: none;
         border-radius: 0.2rem;
-        background-color: #eee;
+        background-color: #350d22;
+        color:white;
         width:100%;
     }
 

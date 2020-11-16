@@ -10,4 +10,3 @@
 {#each tabs as tab}
     <ChatBox box={tab} on:message={refresh} />
 {/each}
-

@@ -38,13 +38,11 @@
 </script>
 
 <h3>New Post</h3>
-
-<hr/>
+<button class="btn btn-danger btn-sm" on:click="{() => (postForm.set(false))}"><i class="fa fa-close"></i></button>
 
 <textarea id="post-text" class="post-form" rows="5" bind:value="{new_post.msg}" placeholder="{organ.get_name()} Post" required></textarea>
 
-<button class="btn btn-danger" on:click="{() => (postForm.set(false))}">Cancel</button>
-<button class="btn btn-primary" on:click="{addPost}" disabled="{new_post.msg.length == 0}">
+<button class="btn post-btn" on:click="{addPost}" disabled="{new_post.msg.length == 0}">
     {#if !loading}
         Post
     {:else}
@@ -54,19 +52,35 @@
 
 
 <style>
-    #post-text {
-        background-color: #eee;
-        width: 100%;
-        outline: none;
-        border:none;
-        border-radius:0.2rem;
-    }
-
-    .btn-danger {
+    h3 {
         float:left;
     }
 
-    .btn-primary {
+    #post-text {
+        background-color: #350d22;
+        width: 100%;
+        outline: none;
+        border:none;
+        border-radius:0.4rem;
+        color:white;
+        margin-top:20px;
+    }
+
+    .btn-danger {
         float:right;
+        border-radius:50%;
+    }
+
+    .post-btn {
+        float:right;
+        background-color: transparent;
+        border-color: #350d22;
+        color:#350d22;
+        box-shadow: unset;
+    }
+
+    .post-btn:hover {
+        color:white;
+        background-color: #350d22;
     }
 </style>

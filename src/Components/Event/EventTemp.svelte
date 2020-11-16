@@ -12,7 +12,18 @@
     export let user:User;
 
     let events:Event[] = organ.get_events();
+
     let can_add_event:boolean = user.get_role().can_add_event();
+
+    $server.on('recv-event', (event:_event) => {
+        if(event.organ_id == organ.get_id()) 
+            events = organ.get_events();
+    });
+
+    $server.on('rm-event', (data:_part_sort) => {
+        if(data.part_value == organ.get_id())
+            events = organ.get_events();
+    });
 </script>
 
 {#if $eventForm}
@@ -29,7 +40,7 @@
         </td>
         <td>
             {#if can_add_event}
-                <button class="btn btn-sm btn-primary" on:click="{() => (eventForm.set(true))}">Add Event</button>
+                <button class="btn btn-sm btn-info" on:click="{() => (eventForm.set(true))}">Add Event</button>
             {/if}
         </td>
     </tr>
@@ -50,6 +61,10 @@
 
 
 <style>
+    h5 {
+        color:#350d22;
+    }
+
     #event-form {
         padding:20px;
         position:fixed;
@@ -61,6 +76,7 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         border-radius: 0.4rem;
         transform: translate(-50%, 0);
+        background-color: slateblue;
     }
 
     #no-events {
@@ -79,5 +95,6 @@
         width:100%;
         height:100%;
         overflow-y: auto;
+        color:white;
     }
 </style>

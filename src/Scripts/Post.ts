@@ -43,6 +43,8 @@ export default class Post {
 
         for(let i = 0; i < results.length; i++) 
             this.comments.push(new Comment(results[i]));
+
+        this.comments = this.comments.sort((a, b) => new Date(b.get_date()).getTime() - new Date(a.get_date()).getTime());
     }
 
     set_comments(comments:Comment[]) {
@@ -50,11 +52,15 @@ export default class Post {
     }
 
     add_comment(comment:Comment) {
-        this.comments.push(comment);
+        this.comments.unshift(comment);
     }
 
     get_id():string {
         return this.id;
+    }
+
+    set_msg(new_msg:string) {
+        this.msg = new_msg;
     }
 
     get_organ_id():string {

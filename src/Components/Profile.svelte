@@ -4,12 +4,12 @@
 
     let invites:_invite[] = $admin.get_invites();
 
-    $server.on('recv-invite', _invite => {
+    $server.on('recv-invite', (invite:_invite) => {
 
-        if(_invite.email == $admin.get_email()) {
+        if(invite.email == $admin.get_email()) {
 
             admin.update(admin => {
-                admin.add_invite(_invite);
+                admin.add_invite(invite);
                 return admin;
             });
 
@@ -18,12 +18,9 @@
     });
 </script>
 
-<button class="btn btn-light">
+<button class="btn btn-info">
     <img id="pro-pic" src="{$admin.get_photo()}" alt="pro-pic"/>
-    HI {$admin.get_first_name()}!
-    {#if invites.length > 0}
-         <i class="fa fa-bell"></i>
-    {/if}
+    HI {$admin.get_first_name()}! <span class="badge badge-dark">{invites.length}</span>
 </button>
 
 <style>
@@ -36,9 +33,5 @@
     #pro-pic {
         width:20px;
         height:20px;
-    }
-
-    .fa-bell {
-        color: goldenrod
     }
 </style>
