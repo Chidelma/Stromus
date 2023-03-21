@@ -10,13 +10,13 @@ To get started with Stromus, follow the instructions below:
 
 ## Features
 
-# Authentication
+### Authentication
 Stromus uses AWS Cognito for authentication. Users can sign up and log in to the application using their credentials.
 
-# Posts
+### Posts
 Users can create posts by adding messages or media. They can also react to posts with likes or comments.
 
-# Events
+### Events
 Users can organize events and RSVP to them. The organization can also do streaming for events to various platforms like Facebook, Twitter, etc.
 
 ## Technologies Used
